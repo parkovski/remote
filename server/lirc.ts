@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 import {ICommandResponse, IGroup, ILayoutMap} from './lirctypes';
 
-const maxHoldRenews = 4;
+const maxHoldRenews = 6;
 let holdingDevice: string|null = null;
 let holdingCommand: string|null = null;
 let holdTimer: any;

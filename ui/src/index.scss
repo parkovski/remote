@@ -16,3 +16,16 @@ a {
     color: #5aadbb;
   }
 }
+
+button {
+  font-size: 1rem;
+  padding: 1rem .05rem;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  background-color: #ddd;
+  &:active {
+    background: radial-gradient(circle at center, #bbb 0, #ccc 50%, #ddd 100%);
+  }
+}

@@ -15,17 +15,16 @@ const styles = {
     margin: '0 0 2rem 0'
   },
   button: {
-    fontSize: '1rem',
-    padding: '1rem .05rem',
     width: '100%',
     height: '100%',
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-    MozUserSelect: 'none',
-    MsUserSelect: 'none',
   },
   error: {
-    color: 'goldenrod',
+    color: 'maroon',
+    backgroundColor: 'lightyellow',
+    border: '1px solid goldenrod',
+    borderRadius: '5px',
+    padding: '5px',
+    marginBottom: '5px',
   }
 };
 
@@ -49,7 +48,8 @@ interface ICommandsState {
   errorMessage?: string;
 };
 
-const maxHoldRenews = 15;
+const maxHoldRenews = 20;
+const touchMoveThreshold = 10;
 
 export class CommandsComponent extends React.Component<ICommandsProps, ICommandsState> {
   static propTypes = {
@@ -62,6 +62,7 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
   holdRenews: number;
   holding: boolean;
   waitingToHold: boolean;
+  touchCoords?: [number, number];
 
   constructor() {
     super();
@@ -76,12 +77,35 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
     axios
       .post(`/remotes/${this.props.device}/send/${command}`)
       .then(res => {
-        this.setState({ errorMessage: res.data.toString() });
+        const error = res.data.toString();
+        if (error) {
+          this.setState({ errorMessage: error });
+        }
       });
   }
 
   hold(command: string) {
-    axios.post(`/remotes/${this.props.device}/hold/${command}`);
+    if (this.waitingToHold) {
+      return;
+    } else if (this.holding) {
+      axios.post(`/remotes/${this.props.device}/hold/${command}`);
+    } else {
+      this.waitingToHold = true;
+      this.startHoldTimer = setTimeout(() => {
+        this.startHoldTimer = null;
+        this.waitingToHold = false;
+        this.holding = true;
+        this.hold(command);
+        this.holdRenews = 0;
+        this.keepHoldTimer = setInterval(() => {
+          if (++this.holdRenews >= maxHoldRenews) {
+            this.stopHold();
+          } else {
+            this.hold(command);
+          }
+        }, 100);
+      }, 300);
+    }
   }
 
   stopHold() {
@@ -94,39 +118,48 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
     this.startHoldTimer = null;
     this.holding = false;
     this.waitingToHold = false;
+    this.touchCoords = null;
   }
 
-  mouseDown(command: string, e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) {
+  mouseDown(command: string) {
     if (this.holding || this.waitingToHold) {
       return;
     }
-
-    this.waitingToHold = true;
-    this.startHoldTimer = setTimeout(() => {
-      this.startHoldTimer = null;
-      this.waitingToHold = false;
-      this.holding = true;
-      this.hold(command);
-      this.holdRenews = 0;
-      this.keepHoldTimer = setInterval(() => {
-        if (++this.holdRenews >= maxHoldRenews) {
-          this.stopHold();
-        } else {
-          this.hold(command);
-        }
-      }, 100);
-    }, 300);
-    e.preventDefault();
+    this.hold(command);
   }
 
-  mouseUp(command: string, e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) {
+  mouseUp(command: string) {
     if (this.holding) {
       this.stopHold();
     } else if (this.waitingToHold) {
       this.stopHold();
       this.run(command);
     }
-    e.preventDefault();
+  }
+
+  touchStart(command: string, e: React.TouchEvent<HTMLButtonElement>) {
+    if (e.touches.length === 1) {
+      this.touchCoords = [e.touches[0].screenX, e.touches[0].screenY];
+      this.hold(command);
+    } else {
+      this.stopHold();
+    }
+  }
+
+  touchMove(e: React.TouchEvent<HTMLButtonElement>) {
+    if (!this.waitingToHold && !this.holding) {
+      return;
+    }
+    if (e.touches.length > 1) {
+      this.stopHold();
+      return;
+    }
+    const dx = e.touches[0].screenX - this.touchCoords[0];
+    const dy = e.touches[0].screenY - this.touchCoords[1];
+    const delta = Math.sqrt(dx * dx + dy * dy);
+    if (delta > touchMoveThreshold) {
+      this.stopHold();
+    }
   }
 
   gridCell(i: number) {
@@ -144,10 +177,11 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
       <div style={{flex: '33.333%'}}>
         <button
           style={style}
-          onMouseDown={e => this.mouseDown(item.name, e)}
-          onMouseUp={e => this.mouseUp(item.name, e)}
-          onTouchStart={e => this.mouseDown(item.name, e)}
-          onTouchEnd={e => this.mouseUp(item.name, e)}
+          onMouseDown={() => this.mouseDown(item.name)}
+          onMouseUp={() => this.mouseUp(item.name)}
+          onTouchStart={e => this.touchStart(item.name, e)}
+          onTouchMove={e => this.touchMove(e)}
+          onTouchEnd={() => this.mouseUp(item.name)}
           >
           {item.alias || item.name}
         </button>
@@ -167,7 +201,7 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
         {
           this.state.errorMessage &&
             <div style={styles.error}>
-              <a href="#" onClick={e => { this.setState({errorMessage: null}); e.preventDefault(); }}>❌</a>
+              <a style={styles.error} href="#" onClick={e => { this.setState({errorMessage: null}); e.preventDefault(); }}>❌</a>
               &nbsp;
               {this.state.errorMessage}
             </div>
