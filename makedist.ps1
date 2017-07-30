@@ -1,24 +1,19 @@
 param([switch]$noserver, [switch]$noui)
 
-Push-Location $PSScriptRoot
 if (-not $noserver) {
-  Set-Location .\server
-  Remove-Item .\dist\*
-  tsc -m commonjs --outDir .\dist main.ts
-  Set-Location dist
-  Compress-Archive .\*,..\..\selfupdate.js -DestinationPath server.zip
-  bash -c "zsh -c '. ~/.zshrc ; scp server.zip alarm@uniremote:remote'"
-  Set-Location ..\..
+  Remove-Item .\server\dist\*
+  tsc -m commonjs --outDir .\server\dist .\server\main.ts
+  Compress-Archive .\server\dist\*,.\selfupdate.js -DestinationPath .\server\dist\server.zip
+  bash -c "zsh -c '. ~/.zshrc ; scp ./server/dist/server.zip alarm@uniremote:remote'"
   Write-Output "Built server"
 }
 
 if (-not $noui) {
   Set-Location .\ui
   npm run build
-  Set-Location dist
-  Compress-Archive .\* -DestinationPath ui.zip
-  bash -c "zsh -c '. ~/.zshrc ; scp ui.zip alarm@uniremote:remote'"
-  Set-Location ..\..
+  Set-Location ..
+  Compress-Archive .\ui\dist\* -DestinationPath .\ui\dist\ui.zip
+  bash -c "zsh -c '. ~/.zshrc ; scp ./ui/dist/ui.zip alarm@uniremote:remote'"
 }
 
 if ((Read-Host -Prompt "Run self update (y/n)? ") -eq "y") {

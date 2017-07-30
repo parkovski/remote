@@ -59,7 +59,7 @@ export default class LircFile {
     let inCodes = false;
     for (const line of lines) {
       if (inCodes) {
-        const codeMatch = /^\s*([^\s]+)\s+0x.+$/.exec(line);
+        const codeMatch = /^\s*([^\s]+)\s+(?:0[Xx])?[a-zA-Z0-9]+/.exec(line);
         if (/^\s*end codes\s*$/.test(line)) {
           inCodes = false;
         }
@@ -132,5 +132,9 @@ export default class LircFile {
 
 function convertName(name: string): string {
   // "KEY_BLAHBLAH" => "Blahblah"
-  return name[4].toUpperCase() + name.substr(5).toLowerCase();
+  if (name.substr(0, 4).toLowerCase() === 'key_') {
+    return name[4].toUpperCase() + name.substr(5).toLowerCase();
+  } else {
+    return name[0].toUpperCase() + name.substr(1).toLowerCase();
+  }
 }

@@ -37,28 +37,50 @@ interface IDevicesState {
 };
 
 export class Devices extends React.Component<IDevicesProps, IDevicesState> {
+  initialRemoteName: string|null;
+
   constructor() {
     super();
-    this.state = {selectedRemote: 0, remotes: []};
+    this.initialRemoteName = document.cookie.replace(/(?:^|.*;\s*)remote\s*\=\s*([^;]*).*$/, "$1");
+    this.state = {selectedRemote: -1, remotes: []};
   }
 
   componentDidMount() {
     axios
       .get('/remotes')
       .then(res => {
-        this.setState({remotes: res.data});
         if (res.data.length) {
+          const index = (res.data as string[]).indexOf(this.initialRemoteName);
+          this.initialRemoteName = null;
+          this.setState({remotes: res.data});
+          if (index !== -1) {
+            this.selectRemote(index);
+          } else {
+            this.selectRemote(0);
+          }
+        } else {
+          this.setState({
+            remotes: ['Error'],
+            commands: {
+              "groups": [{"title": "Couldn't load remotes", "commands": []}]
+            }
+          });
           this.selectRemote(0);
         }
       });
   }
 
   selectRemote(index: number) {
-    this.setState({ selectedRemote: index });
+    if (this.initialRemoteName !== null || index == this.state.selectedRemote || index < 0) {
+      return;
+    }
     axios
       .get(`/remotes/${this.state.remotes[index]}/commands`)
       .then(res => {
-        this.setState({commands: res.data});
+        let expires = new Date();
+        expires.setDate(expires.getDate() + 3);
+        document.cookie = `remote=${this.state.remotes[index]};expires=${expires.toUTCString()}`;
+        this.setState({ selectedRemote: index, commands: res.data });
       });
   }
 

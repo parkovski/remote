@@ -4,9 +4,9 @@ export interface IGroup {
 }
 
 export interface ILayoutMap {
-  styles: {default?: any, [_:string]:any};
+  styles?: {default?: any, [_:string]:any};
   groups: IGroup[];
-  labels: {[_:string]:string};
+  labels?: {[_:string]:string};
 }
 
 /// If the layout is specified, only the buttons
