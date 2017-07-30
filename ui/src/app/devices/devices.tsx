@@ -46,6 +46,14 @@ export class Devices extends React.Component<IDevicesProps, IDevicesState> {
   }
 
   componentDidMount() {
+    const err = () => this.setState({
+      remotes: ['Error'],
+      commands: {
+        "groups": [{"title": "Couldn't load remotes", "commands": []}]
+      },
+      selectedRemote: 0,
+    });
+
     axios
       .get('/remotes')
       .then(res => {
@@ -59,15 +67,10 @@ export class Devices extends React.Component<IDevicesProps, IDevicesState> {
             this.selectRemote(0);
           }
         } else {
-          this.setState({
-            remotes: ['Error'],
-            commands: {
-              "groups": [{"title": "Couldn't load remotes", "commands": []}]
-            }
-          });
-          this.selectRemote(0);
+          err();
         }
-      });
+      })
+      .catch(err);
   }
 
   selectRemote(index: number) {

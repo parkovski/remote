@@ -1,0 +1,14 @@
+# Put this file in /usr/lib/systemd/system
+
+[Unit]
+Description=Web server for IR remote
+After=lircd.service
+
+[Service]
+Type=simple
+Environment=PORT=80
+ExecStart=/usr/bin/node /home/alarm/remote/main.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
