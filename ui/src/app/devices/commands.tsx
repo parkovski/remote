@@ -63,6 +63,8 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
   holding: boolean;
   waitingToHold: boolean;
   touchCoords?: [number, number];
+  cancelMouseEvents: boolean;
+  mouseEventCancelInterval: any;
 
   constructor() {
     super();
@@ -71,6 +73,7 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
     this.keepHoldTimer = null;
     this.holding = false;
     this.waitingToHold = false;
+    this.cancelMouseEvents = false;
   }
 
   run(command: string) {
@@ -122,13 +125,25 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
   }
 
   mouseDown(command: string) {
-    if (this.holding || this.waitingToHold) {
+    if (this.holding || this.waitingToHold || this.cancelMouseEvents) {
       return;
     }
     this.hold(command);
   }
 
   mouseUp(command: string) {
+    if (this.cancelMouseEvents) {
+      setTimeout(() => this.cancelMouseEvents = false, 500);
+      return;
+    }
+    this.endInput(command);
+  }
+
+  touchEnd(command: string) {
+    this.endInput(command);
+  }
+
+  endInput(command: string) {
     if (this.holding) {
       this.stopHold();
     } else if (this.waitingToHold) {
@@ -138,6 +153,7 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
   }
 
   touchStart(command: string, e: React.TouchEvent<HTMLButtonElement>) {
+    this.cancelMouseEvents = true;
     if (e.touches.length === 1) {
       this.touchCoords = [e.touches[0].screenX, e.touches[0].screenY];
       this.hold(command);
@@ -181,7 +197,7 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
           onMouseUp={() => this.mouseUp(item.name)}
           onTouchStart={e => this.touchStart(item.name, e)}
           onTouchMove={e => this.touchMove(e)}
-          onTouchEnd={() => this.mouseUp(item.name)}
+          onTouchEnd={() => this.touchEnd(item.name)}
           >
           {item.alias || item.name}
         </button>
