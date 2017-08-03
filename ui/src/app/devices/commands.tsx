@@ -64,7 +64,6 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
   waitingToHold: boolean;
   touchCoords?: [number, number];
   cancelMouseEvents: boolean;
-  mouseEventCancelInterval: any;
 
   constructor() {
     super();
