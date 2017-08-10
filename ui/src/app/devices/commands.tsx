@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const styles = {
   tech: {
-    height: '15rem',
+    minHeight: '15rem',
     width: '15rem',
     border: '1px solid lightgray',
     borderRadius: '1rem',

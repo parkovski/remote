@@ -64,9 +64,8 @@ app.post('/remotes/:device/hold/:command', (req, res) => {
     res.end('nope dawg');
     return;
   }
-  hold(req.params.device, device.commands[command]);
   res.type('text');
-  res.end('');
+  res.end(hold(req.params.device, device.commands[command]));
 });
 app.post('/stophold', (req, res) => {
   stopHold();

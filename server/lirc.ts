@@ -10,14 +10,24 @@ let holdingCommand: string|null = null;
 let holdTimer: any;
 let holdRenews: number;
 let renewHold: boolean;
+let commandActive: boolean;
 
-export function hold(device: string, command: string) {
+function allowCommand(allow: boolean) {
+  if (allow) {
+    setTimeout(() => commandActive = false, 250);
+  } else {
+    commandActive = true;
+  }
+}
+
+export function hold(device: string, command: string): string {
   if (device === holdingDevice && command === holdingCommand && holdRenews < maxHoldRenews) {
     renewHold = true;
-    return;
+    return '';
   } else if (holdingDevice != null || holdingCommand != null) {
-    stopHold();
-    return;
+    return 'Someone else is already holding a button you turtle 🐢.';
+  } else if (commandActive) {
+    return 'Sorry, a command is already running 😢.';
   }
 
   holdRenews = 0;
@@ -25,6 +35,7 @@ export function hold(device: string, command: string) {
   holdingDevice = device;
   holdingCommand = command;
   spawn('irsend', ['SEND_START', device, command]);
+  allowCommand(false);
   holdTimer = setInterval(() => {
     if (!renewHold || ++holdRenews >= maxHoldRenews) {
       stopHold();
@@ -32,6 +43,7 @@ export function hold(device: string, command: string) {
     }
     renewHold = false;
   }, 450);
+  return '';
 }
 
 export function stopHold() {
@@ -39,7 +51,8 @@ export function stopHold() {
     return;
   }
   clearInterval(holdTimer);
-  spawn('irsend', ['SEND_STOP', holdingDevice, holdingCommand]);
+  spawn('irsend', ['SEND_STOP', holdingDevice, holdingCommand])
+    .on('exit', () => allowCommand(true));
   holdingDevice = null;
   holdingCommand = null;
 }
@@ -116,15 +129,21 @@ export default class LircFile {
   }
 
   run(command: string, res: Response) {
+    if (commandActive) {
+      res.end('A command is already running or you are pressing the button too fast 🚀. (Try holding it?)');
+      return;
+    }
     const process = spawn('irsend', ['SEND_ONCE', this.name, this.commands[command]]);
     process.stderr.on('data', chunk => res && res.write(chunk));
     process.stdout.on('data', chunk => res && res.write(chunk));
+    allowCommand(false);
     const timeout = setTimeout(() => {
       process.kill();
-      res.end('\nProcess timed out.');
-    }, 3000);
+      res.end('\nProcess timed out 😨. Wait a minute before trying again.');
+    }, 1000);
     process.on('exit', () => {
       clearTimeout(timeout);
+      allowCommand(true);
       res.end();
     });
   }
