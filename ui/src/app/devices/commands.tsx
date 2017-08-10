@@ -48,7 +48,7 @@ interface ICommandsState {
   errorMessage?: string;
 };
 
-const maxHoldRenews = 20;
+const maxHoldRenews = 40;
 const touchMoveThreshold = 10;
 
 export class CommandsComponent extends React.Component<ICommandsProps, ICommandsState> {
@@ -90,7 +90,14 @@ export class CommandsComponent extends React.Component<ICommandsProps, ICommands
     if (this.waitingToHold) {
       return;
     } else if (this.holding) {
-      axios.post(`/remotes/${this.props.device}/hold/${command}`);
+      axios
+        .post(`/remotes/${this.props.device}/hold/${command}`)
+        .then(res => {
+          const error = res.data.toString();
+          if (error) {
+            this.setState({ errorMessage: error });
+          }
+        });
     } else {
       this.waitingToHold = true;
       this.startHoldTimer = setTimeout(() => {

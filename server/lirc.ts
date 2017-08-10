@@ -4,13 +4,15 @@ import * as fs from 'fs';
 
 import {ICommandResponse, IGroup, ILayoutMap} from './lirctypes';
 
-const maxHoldRenews = 6;
+const maxHoldRenews = 5;
 let holdingDevice: string|null = null;
 let holdingCommand: string|null = null;
 let holdTimer: any;
 let holdRenews: number;
 let renewHold: boolean;
 let commandActive: boolean;
+let holdReminderTimer: any;
+let sendHoldReminder: boolean;
 
 function allowCommand(allow: boolean) {
   if (allow) {
@@ -21,8 +23,15 @@ function allowCommand(allow: boolean) {
 }
 
 export function hold(device: string, command: string): string {
-  if (device === holdingDevice && command === holdingCommand && holdRenews < maxHoldRenews) {
-    renewHold = true;
+  if (device === holdingDevice && command === holdingCommand) {
+    if (holdRenews < maxHoldRenews) {
+      renewHold = true;
+    } else if (sendHoldReminder) {
+      sendHoldReminder = false;
+      return 'Release and press again if you want to keep sending this command 🚦.'
+    } else if (!holdReminderTimer) {
+      holdReminderTimer = setTimeout(() => sendHoldReminder = true, 1000);
+    }
     return '';
   } else if (holdingDevice != null || holdingCommand != null) {
     return 'Someone else is already holding a button you turtle 🐢.';
@@ -34,11 +43,14 @@ export function hold(device: string, command: string): string {
   renewHold = false;
   holdingDevice = device;
   holdingCommand = command;
+  clearTimeout(holdReminderTimer);
+  holdReminderTimer = null;
+  sendHoldReminder = false;
   spawn('irsend', ['SEND_START', device, command]);
   allowCommand(false);
   holdTimer = setInterval(() => {
     if (!renewHold || ++holdRenews >= maxHoldRenews) {
-      stopHold();
+      cancelHold();
       return;
     }
     renewHold = false;
@@ -46,13 +58,19 @@ export function hold(device: string, command: string): string {
   return '';
 }
 
-export function stopHold() {
-  if (holdingDevice == null && holdingCommand == null) {
+function cancelHold() {
+  if (!holdTimer) {
     return;
   }
   clearInterval(holdTimer);
+  holdTimer = null;
   spawn('irsend', ['SEND_STOP', holdingDevice, holdingCommand])
     .on('exit', () => allowCommand(true));
+  setTimeout(() => stopHold(), 2500);
+}
+
+export function stopHold() {
+  cancelHold();
   holdingDevice = null;
   holdingCommand = null;
 }
