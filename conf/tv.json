@@ -1,0 +1,80 @@
+{
+  "groups": [{
+    "title": "Good",
+    "commands": [
+      "Power", "Media", "Menu",
+      "Volumedown", "Mute", "Volumeup",
+      "Channeldown", "Previous", "Channelup"
+    ]
+  }, {
+    "title": "Finger Math",
+    "commands": [
+      "1", "2", "3",
+      "4", "5", "6",
+      "7", "8", "9",
+      "0"
+    ]
+  }, {
+    "title": "Cool",
+    "commands": [
+      "Red", "Up", "Green",
+      "Left", "Ok", "Right",
+      "Yellow", "Down", "Blue"
+    ]
+  }, {
+    "title": "Icky",
+    "commands": [
+      "Subtitle", "Favorites", "Dot",
+      "Option", "Info", "Mode",
+      "Question", "Program"
+    ]
+  }],
+  "labels": {
+    "Power": "⚡🔌⚡",
+    "Media": "💲ource",
+    "Menu": "⚙",
+    "Volumedown": "➖🔊",
+    "Mute": "🤐",
+    "Volumeup": "🔊➕",
+    "Channeldown": "➖📶",
+    "Previous": "🔙",
+    "Channelup": "📶➕",
+    "1": "🥇",
+    "2": "🥈",
+    "3": "🥉",
+    "4": "🤘",
+    "5": "🖐",
+    "6": "➰",
+    "7": "🎰",
+    "8": "🎱",
+    "9": "🕘",
+    "0": "🔞",
+    "Red": "❤",
+    "Up": "🔱",
+    "Green": "💚",
+    "Left": "◀",
+    "Ok": "✅",
+    "Right": "▶",
+    "Yellow": "💛",
+    "Down": "⚓️",
+    "Blue": "💙",
+    "Dot": "☣",
+    "Subtitle": "🕉🈵",
+    "Favorites": "😍😍",
+    "Question": "???"
+  },
+  "styles": {
+    "Red": {
+      "backgroundColor": "#edd"
+    },
+    "Green": {
+      "backgroundColor": "#ded"
+    },
+    "Yellow": {
+      "backgroundColor": "#eed"
+    },
+    "Blue": {
+      "backgroundColor": "#dde"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "groups": [{
+    "title": "Fan",
+    "commands": [
+      "Power", "Mode", "Angle", "Time"
+    ]
+  }, {
+    "title": "Shoogity Boogity",
+    "commands": [
+      "Move"
+    ]
+  }],
+  "labels": {
+    "Power": "🎆🔌",
+    "Mode": "〽ode",
+    "Angle": "🔄",
+    "Time": "⏰",
+    "Move": "Shoogity Boogity"
+  }
+}

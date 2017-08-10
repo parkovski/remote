@@ -1,0 +1,70 @@
+{
+  "groups": [{
+    "title": "Common",
+    "commands": [
+      "Power", "Speakera", "Speakerb",
+      "Volumedown", "Mute", "Volumeup",
+      "Previouspreset", "Channel", "Nextpreset"
+    ]
+  }, {
+    "title": "Inputs",
+    "commands": [
+      "Video1", "Video2", "Video3",
+      "Dvd", "Cd", "Tape",
+      "Tuner", "Audioselect"
+    ]
+  }, {
+    "title": "Controls",
+    "commands": [
+      "Stop", "Play", "Pause",
+      "Rewind", "Sleep", "Fastforward",
+      "Left", "Enter", "Right"
+    ]
+  }, {
+    "title": "Sound modes",
+    "commands": [
+      "Dsp", "Direct", "Stereo",
+      "Surround", "Astereo", "Cinefilter",
+      "Latenight", "Leveldown", "Levelup"
+    ]
+  }, {
+    "title": "Really good",
+    "commands": [
+      "Test", "Dimmer"
+    ]
+  }],
+  "labels": {
+    "Power": "🔛🔌📴",
+    "Speakera": "🅰🔊",
+    "Speakerb": "🅱🔊",
+    "Volumedown": "🔻🔊",
+    "Volumeup": "🔊🔺",
+    "Mute": "🔇",
+    "Previouspreset": "⬅Preset",
+    "Channel": "🚜🎢",
+    "Nextpreset": "Preset➡",
+    "Latenight": "🎷🌙",
+    "Leveldown": "🔻📉Lv",
+    "Levelup": "Lv📈🔺",
+    "Stop": "⏹",
+    "Play": "▶",
+    "Pause": "⏸",
+    "Rewind": "⏪",
+    "Sleep": "💤💤",
+    "Fastforward": "⏩",
+    "Left": "⬅",
+    "Enter": "🎈🆗🎈",
+    "Right": "➡",
+    "Test": "🆒💯🤑",
+    "Dimmer": "🍕🍔🌮",
+    "Audioselect": "📢Audio Sel.",
+    "Astereo": "A. Stereo",
+    "Video1": "🎥 📼🥇 ",
+    "Video2": "🎥 📼🥈 ",
+    "Video3": "🎥 📼🥉 ",
+    "Dvd": "📀📺",
+    "Cd": "💿🎵",
+    "Tape": "🎗Tape",
+    "Tuner": "📻Radio"
+  }
+}
