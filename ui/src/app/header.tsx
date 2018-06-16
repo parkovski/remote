@@ -39,8 +39,8 @@ class Time {
   speedMode: boolean;
 };
 
-const months = ['Janrurary', 'Besebber', 'Lunch', 'Hayden\'s bacne', 'Your mom', 'Chinese New Year',
-  'Lyin\' Sam', 'Beat bop solo', 'Last Tuesday', '\'Murica', 'of of of', 'The twelfth',
+const months = ['Janrurary', 'Besebber', 'Lunch', 'Chinese New Year', 'Lyin\' Sam',
+  'Beat bop solo', 'Last Tuesday', '\'Murica', 'of of of', 'The twelfth',
   '???????', '[Time machine error]', 'Hunting wabbits', 'Punkin pahhh', 'Pweenurtsnah',
   'Owie darnders', 'Drabol eeds', 'Clown carz'
 ];

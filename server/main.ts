@@ -79,7 +79,7 @@ app.post('/selfupdate', (req, res) => {
   };
   const statFiles = ['server.zip', 'main.js', 'ui.zip', 'ui/index.html', 'selfupdate.js'];
   const requiredFiles = ['main.js', 'ui/index.html', 'selfupdate.js'];
-  
+
   function makeCallback(prop: string) {
     return function(err: NodeJS.ErrnoException, info: fs.Stats) {
       if (!err) {
@@ -137,6 +137,33 @@ app.post('/selfupdate', (req, res) => {
   for (let file of statFiles) {
     fs.stat(__dirname + '/' + file, makeCallback(file));
   }
+});
+app.post('/goodluck', (req, res) => {
+  const goodluckFile = process.env.GOODLUCK || (__dirname + '/goodluck.sh');
+  fs.exists(goodluckFile, e => {
+    if (!e) {
+      res.status(404);
+      res.type('text');
+      res.end('script not found');
+      return;
+    }
+    child_process.exec(goodluckFile, (e, out, err) => {
+      if (e) {
+        res.status(500);
+        res.type('text');
+        res.write('stdout:\n');
+        res.write(out);
+        res.write('\n\nstderr:\n');
+        res.write(err+'\n\n');
+        res.end(e.toString());
+      } else {
+        res.status(200);
+        res.type('text');
+        res.end('ok');
+      }
+    });
+  }
+  );
 });
 app.get('/', (req, res) => res.sendFile(__dirname + '/ui/index.html'));
 app.use(express.static(__dirname + '/ui'));
