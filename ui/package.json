@@ -18,7 +18,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/parkovski/remote#readme",
   "dependencies": {
-    "axios": "^0.15.3",
+    "axios": "^0.21.1",
     "es6-promise": "^4.0.5",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
